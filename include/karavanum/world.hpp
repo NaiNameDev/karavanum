@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <iostream>
+#include <engine/shader.hpp>
 
 struct tile_t {
 	unsigned int x : 5;
@@ -10,19 +10,27 @@ struct tile_t {
 }; // 32 bit
 
 struct chunk_t {
-	std::array<tile_t, 1024> raw;
-	int64_t x;
-	int64_t y;
+	std::array<tile_t, 32 * 32> raw;
+	int32_t x;
+	int32_t y;
 };
 
 class World final {
 private:
-	glm::vec2 camera_pos;
-	int8_t camera_z;
-	glm::vec2 camera_zoom;
-
+	Shader shader;
+	float aspect;
 	std::vector<chunk_t> chunks;
 
+	unsigned int ssbo, vao;
 public:
-	draw();
+	glm::vec2 view_point;
+	int8_t view_point_z;
+	float zoom;
+	
+	World(std::string f_path, std::string v_path, std::string g_path, float naspect);
+	~World();
+
+	void move_camera();
+	void gen_world();
+	void draw();
 };

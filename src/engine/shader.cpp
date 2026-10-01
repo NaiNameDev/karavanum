@@ -3,8 +3,8 @@
 std::string Shader::load_file(const char* path) {
 	FILE* f = fopen(path, "r");
 	if (f == NULL) {
-		std::cout << "ERROR: can not find file " << path << std::endl;
-		exit(-1);
+		std::cerr << "ERROR: can not find file " << path << std::endl;
+		exit(1);
 	}
 
 	std::string ret = ""; int c;
@@ -22,14 +22,16 @@ void Shader::check_errors(unsigned int shader, std::string type) {
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			std::cerr << type << " SHADER COMPILATION ERROR: " << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			exit(1);
 		}
 	}
 	else {
 		glGetProgramiv(shader, GL_LINK_STATUS, &success);
 		if (!success) {
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			std::cerr << type << " SHADER COMPILATION ERROR: " << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			exit(1);
 		}
 	}
 }
@@ -79,7 +81,8 @@ void Shader::attach_shader(std::string type, const char* path) {
 		tmp_shaders.push_back(comp);
 	}
 	else {
-		std::cout << "ERROR::SHADER unknown shader type: " << type << "\n";
+		std::cerr << "ERROR: unknown shader type: " << type << "\n";
+		exit(1);
 	}
 }
 

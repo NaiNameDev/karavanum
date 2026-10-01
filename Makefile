@@ -3,7 +3,7 @@ STD = -std=c++20
 FLGS = -O3 -flto
 DEF = -DGLM_FORCE_INTRINSICS -DGLM_FORCE_DEFAULT_ALIGNED_GENTYPES -DGLM_ENABLE_EXPERIMENTAL
 LIBS = -I./include -L./lib/glad -lglfw -lglad
-SRC = main.cpp src/engine/*.cpp
+SRC = main.cpp src/engine/*.cpp src/karavanum/*.cpp
 PREC_PATH = ./include/engine/precompile_headers.hpp
 
 a.elf: main.cpp
