@@ -18,6 +18,6 @@ ctdbg: main.cpp
 
 gen_prec: ./include/engine/ ./lib/glad/
 	echo "#pragma once" > ./include/engine/precompile_headers.hpp
-	grep -r "#include" | awk -F':' '{print $$2}' | grep -vE "\"|engine|win" | tr -d "*" | tr -d " " | grep ^[#] | sort -u >> $(PREC_PATH)
+	grep -r "#include" | awk -F':' '{print $$2}' | grep -vE "\"|engine|karavanum|win" | tr -d "*" | tr -d " " | grep ^[#] | sort -u >> $(PREC_PATH)
 	g++ ./include/glad/glad.c -c -o ./lib/glad/libglad.so -I./include/
 	$(CXX) $(STD) $(FLGS) $(DEF) -x c++-header $(PREC_PATH) -I./include

@@ -2,6 +2,8 @@
 
 #include <engine/shader.hpp>
 
+#include <glm/gtc/noise.hpp>
+
 struct tile_t {
 	unsigned int x : 5;
 	unsigned int y : 5;
@@ -31,6 +33,7 @@ public:
 	~World();
 
 	void move_camera();
+	void gen_chunk(glm::vec2 chunk_pos, chunk_t& chunk);
 	void gen_world();
 	void draw();
 };

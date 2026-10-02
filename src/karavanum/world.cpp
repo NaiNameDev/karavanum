@@ -23,29 +23,25 @@ World::~World() {
 }
 
 // dodelat nada tut poka zaglushka
+void World::gen_chunk(glm::vec2 chunk_pos, chunk_t& chunk) {
+	chunk.x = (int)chunk_pos.x; chunk.y = (int)chunk_pos.y;
+
+	for (unsigned int i = 0; i < 32; i++) {
+		for (unsigned int j = 0; j < 32; j++) {
+			float prl = glm::simplex(glm::vec2(i/32.0f + chunk_pos.x, j/32.0f + chunk_pos.y));
+			chunk.raw[i * 32 + j] = (tile_t){i, j, (int8_t)(prl * 8.0f), (i % 8) * 4};
+		}
+	}
+}
 void World::gen_world() {
-	chunk_t test;
-	test.x = 0;
-	test.y = 0;
+	chunk_t ch;
 
-	for (unsigned int i = 0; i < 32; i++) {
-		for (unsigned int j = 0; j < 32; j++) {
-			test.raw[i * 32 + j] = (tile_t){i, j, (int)(j % 8), (i % 8) * 4};
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			gen_chunk(glm::vec2(i, j), ch);
+			chunks.push_back(ch);
 		}
 	}
-
-	chunks.push_back(test);
-	
-	test.x = -1;
-	test.y = -1;
-
-	for (unsigned int i = 0; i < 32; i++) {
-		for (unsigned int j = 0; j < 32; j++) {
-			test.raw[i * 32 + j] = (tile_t){i, j, (int)(j % 16) * 2, (i % 9) * 12};
-		}
-	}
-
-	chunks.push_back(test);
 }
 
 void World::draw() {

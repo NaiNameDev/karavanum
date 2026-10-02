@@ -14,12 +14,13 @@ void main() {
 	}
 	
 	out_color = vec4(1.0f, 1.0f, 1.0f, 1.0);
-	
+/*
 	if (view_z - f_orig_z > 10) {
-		out_color.xyz *= 0.3;
+		out_color.xyz *= 1.0f - ((view_z - f_orig_z) / 245.0f);
 	}
 	if (view_z - f_orig_z > 20) {
-		out_color.xyz *= 0.6;
+		out_color.xyz *= 1.0f - ((view_z - f_orig_z) / 235.0f);
 	}
-	out_color.xyz *= float((f_orig_z - view_z) + 255.0f)/255.0f;
+	*/
+	out_color.xyz *= 1.0f - (clamp(float(view_z - f_orig_z), 0.0f, 20.0f)/20.0f);
 }
