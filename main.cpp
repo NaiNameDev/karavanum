@@ -10,10 +10,11 @@ World world("shaders/f_world.glsl", "shaders/v_world.glsl", "shaders/g_world.gls
 void on_ready() {
 	std::cout << "start!\n";
 	
-	world.gen_world();
 }
 void process(float delta) {
 	//engine.print_fps_info();
+	
+	world.gen_world();
 	
 	if (engine.main_window.is_action_pressed(GLFW_KEY_W)) world.view_point -= glm::vec2(0.0f, 0.01f) * (world.zoom);
 	if (engine.main_window.is_action_pressed(GLFW_KEY_S)) world.view_point -= glm::vec2(0.0f, -0.01f) * (world.zoom);

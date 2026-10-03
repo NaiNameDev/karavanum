@@ -23,6 +23,10 @@ private:
 	float aspect;
 	std::vector<chunk_t> chunks;
 
+	glm::vec2 last_left;
+	glm::vec2 last_right;
+	bool is_first;
+
 	unsigned int ssbo, vao;
 public:
 	glm::vec2 view_point;
