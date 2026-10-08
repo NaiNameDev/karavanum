@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <engine/general.hpp>
 #include <engine/shader.hpp>
 
 #include <glm/gtc/noise.hpp>
@@ -28,6 +29,7 @@ private:
 	bool is_first;
 
 	unsigned int ssbo, vao;
+	
 public:
 	glm::vec2 view_point;
 	int8_t view_point_z;
@@ -36,6 +38,8 @@ public:
 	World(std::string f_path, std::string v_path, std::string g_path, float naspect);
 	~World();
 
+	bool is_inside_view_rect(glm::vec2 point);
+	
 	void move_camera();
 	void gen_chunk(glm::vec2 chunk_pos, chunk_t& chunk);
 	void gen_world();

@@ -50,6 +50,7 @@ void Engine::run() {
 }
 
 void Engine::print_fps_info() {
+	std::cout << "\nFrame #" << frame_cnt << " summary\n";
 	if (delta > 0.001f) {
 		std::cout << "FPS: " << 1.0f / delta << ", MAX_FPS: " << max_fps << ", AVG_FPS: " << all_fps / frame_cnt << ", DELTA: " << delta << "\n";
 		if (1.0f/delta > max_fps) max_fps = (double)(1.0f/delta);

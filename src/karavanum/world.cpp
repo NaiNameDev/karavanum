@@ -7,6 +7,8 @@ World::World(std::string f_path, std::string v_path, std::string g_path, float n
 	zoom = 1.0f;
 	aspect = naspect;
 
+	chunks.reserve(32 * 32);
+
 	shader.init_shader_program();
 	shader.attach_shader("FRAGMENT", f_path.c_str());
 	shader.attach_shader("GEOMETRY", g_path.c_str());
@@ -23,6 +25,10 @@ World::~World() {
 	glDeleteBuffers(1, &vao);
 }
 
+bool World::is_inside_view_rect(glm::vec2 point) {
+	return is_inside_rect(point, last_left, last_right);
+}
+
 // dodelat nada tut poka zaglushka
 void World::gen_chunk(glm::vec2 chunk_pos, chunk_t& chunk) {
 	chunk.x = (int)chunk_pos.x; chunk.y = (int)chunk_pos.y;
@@ -37,29 +43,52 @@ void World::gen_chunk(glm::vec2 chunk_pos, chunk_t& chunk) {
 void World::gen_world() {
 	chunk_t ch;
 
+	glm::vec2 left_point = glm::vec2(-0.5f * zoom * aspect, -0.5f * zoom) - view_point + glm::vec2(-64.0f, -64.0f);
+	glm::vec2 right_point =glm::vec2(0.5f * zoom * aspect, 0.5f * zoom) - view_point + glm::vec2(64.0f, 64.0f);
+
+	if ((glm::ivec2(left_point) == glm::ivec2(last_left)) && (glm::ivec2(right_point) == glm::ivec2(last_right)) && !is_first) {
+		std::cout << "skip\n";
+		return;
+	}
+
 	// does old and new boxes colliding
-	if (((left_point.x > last_left.x && right_point.x < last_left.x)||
-		 (left_point.x > last_right.x && right_point.x < last_right.x)) 
-		  &&
-		((left_point.y > last_left.y && right_point.y < last_left.y)||
-		 (left_point.y > last_right.y && right_point.y < last_right.y)) && !is_first) {
-		float min_x = glm::min(left_point.x, last_left.x);
-		float min_y = glm::min(left_point.y, last_left.y);
+	if (is_inside_rect(last_left, left_point, right_point) || is_inside_rect(last_right, left_point, right_point) || is_inside_rect(left_point, last_left, last_right) ||
+	   (is_inside_rect(glm::vec2(last_left.x, last_right.y), left_point, right_point) || is_inside_rect(glm::vec2(last_right.x, last_left.y), left_point, right_point)) && !is_first) {
+		std::cout << "collide\n";
+		// destroy chunks we dont see
+		for (int i = 0; i < chunks.size(); i++) {
+			if (is_inside_rect(glm::vec2(chunks[i].x * 32, chunks[i].y * 32), left_point, right_point)) continue;
+			chunks.erase(chunks.begin() + i);
+			i--;
+		}
+
+		// generate new chunks
+		int x_end = glm::ceil(right_point.x * 0.03125);
+		int y_end = glm::ceil(right_point.y * 0.03125);
+		for (int i = glm::floor(left_point.x * 0.03125); i < x_end; i++) {
+			for (int j = glm::floor(left_point.y * 0.03125); j < y_end; j++) {
+				if (is_inside_rect(glm::vec2(i * 32, j * 32), last_left, last_right)) continue;
+
+				chunks.push_back(ch);
+				gen_chunk(glm::vec2(i, j), chunks[chunks.size()-1]);
+			}
+		}
+
+		last_left = left_point;
+		last_right = right_point;
 		
 		return;
 	}
 	// is it first time rendering or something
+	std::cout << "bro...\n";
 	chunks.clear();
 
-	glm::vec2 left_point = glm::vec2(-0.5f * zoom * aspect, -0.5f * zoom) - view_point;
-	glm::vec2 right_point =glm::vec2(0.5f * zoom * aspect, 0.5f * zoom) - view_point;
-
-	std::vector<glm::vec2> gen_coords;
-	std::vector<glm::vec2> free_coords;
+	last_left = left_point;
+	last_right = right_point;
 
 	// x * 0.03125 = x / 32.0
-	float x_end = glm::ceil(right_point.x * 0.03125) + 2;
-	float y_end = glm::ceil(right_point.y * 0.03125) + 2;
+	int x_end = glm::ceil(right_point.x * 0.03125) + 2;
+	int y_end = glm::ceil(right_point.y * 0.03125) + 2;
 	for (int i = glm::floor(left_point.x * 0.03125) - 2; i < x_end; i++) {
 		for (int j = glm::floor(left_point.y * 0.03125) - 2; j < y_end; j++) {
 			chunks.push_back(ch);
